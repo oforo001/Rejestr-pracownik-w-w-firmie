@@ -42,21 +42,6 @@
         max-width: 760px;
     }
 
-    .um-hero__eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        margin-bottom: 10px;
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.06);
-        color: #334155;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
     .um-hero__title {
         margin: 0;
         font-size: clamp(1.5rem, 2vw, 2rem);
@@ -105,6 +90,26 @@
         backdrop-filter: blur(14px);
     }
 
+    .um-alert {
+        margin: 1rem 0 0;
+        border-radius: 16px;
+        padding: 0.9rem 1rem;
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .um-alert--success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .um-alert--error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
     .um-table-wrap {
         overflow: hidden;
         border-radius: 18px;
@@ -133,11 +138,10 @@
     .um-table td {
         padding: 0.95rem 1.15rem;
         vertical-align: top;
-        white-space: nowrap;
     }
 
     .um-table tbody tr {
-        transition: background-color 0.15s ease, transform 0.15s ease;
+        transition: background-color 0.15s ease;
     }
 
     .um-table tbody tr:hover {
@@ -165,6 +169,52 @@
         line-height: 1;
     }
 
+    .um-badge--muted {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .um-badge--active {
+        background: #ecfdf5;
+        color: #047857;
+        box-shadow: inset 0 0 0 1px #a7f3d0;
+    }
+
+    .um-badge--inactive {
+        background: #fef2f2;
+        color: #b91c1c;
+        box-shadow: inset 0 0 0 1px #fecaca;
+    }
+
+    .um-supervisor-box {
+        display: grid;
+        gap: 0.6rem;
+    }
+
+    .um-supervisor-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .um-supervisor-select {
+        min-width: 220px;
+        max-width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        background: #fff;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+        color: #0f172a;
+    }
+
+    .um-supervisor-note {
+        color: #64748b;
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+
     .um-actions {
         display: flex;
         justify-content: flex-end;
@@ -180,42 +230,41 @@
         min-width: 0;
     }
 
-    .um-topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        margin-bottom: 1rem;
+    .um-delete-note {
+        color: #b91c1c;
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
 
-    .um-topbar p {
-        margin: 0.25rem 0 0;
-        color: #64748b;
-        font-size: 0.92rem;
+    @media (max-width: 768px) {
+        .um-page {
+            padding-inline: 0.75rem;
+        }
+
+        .um-table th,
+        .um-table td {
+            padding: 0.8rem 0.9rem;
+        }
+
+        .um-supervisor-select {
+            min-width: 100%;
+        }
     }
 </style>
 
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-1">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Zarządzanie użytkownikami
-            </h2>
-            <p class="text-sm text-gray-500">
-                Twórz konta, kontroluj aktywność i zarządzaj dostępem do systemu.
-            </p>
-        </div>
-    </x-slot>
+    @php
+        $currentUserId = auth()->id();
+    @endphp
 
     <div class="py-12">
         <div class="w-full px-4 sm:px-6 lg:px-8 um-page">
             <div class="um-hero">
                 <div class="um-hero__inner">
                     <div class="um-hero__copy">
-                        <div class="um-hero__eyebrow">User management</div>
-                        <h3 class="um-hero__title">Zarządzaj kontami bez chaosu</h3>
+                        <h3 class="um-hero__title">Zarządzaj kontami</h3>
                         <p class="um-hero__lead">
-                            Twórz nowe konta, kontroluj aktywność użytkowników i sprawdzaj ostatnie logowania w jednym miejscu.
+                            Dodawaj użytkowników, przypisuj aktywnych przełożonych dla pracowników.
                         </p>
                     </div>
 
@@ -226,11 +275,19 @@
             </div>
 
             <div class="um-card p-4 sm:p-6">
-                <x-auth-session-status class="mt-4" :status="session('status')" />
+                @if (session('status'))
+                    <div class="um-alert um-alert--success">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-                @if ($errors->get('user'))
-                    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                        {{ $errors->first('user') }}
+                @if ($errors->any())
+                    <div class="um-alert um-alert--error">
+                        <ul class="list-disc space-y-1 ps-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 
@@ -242,6 +299,7 @@
                                     <th>Nazwa</th>
                                     <th>E-mail</th>
                                     <th>Rola</th>
+                                    <th>Przełożony</th>
                                     <th>Pierwsze logowanie</th>
                                     <th>Ostatnie logowanie</th>
                                     <th>Status</th>
@@ -254,39 +312,86 @@
                                         $roleLabel = match ($user->role) {
                                             'admin' => 'Administrator',
                                             'supervisor' => 'Przełożony',
-                                            default => 'Użytkownik',
+                                            default => 'Pracownik',
                                         };
 
-                                        $canToggle = auth()->id() !== $user->id;
-                                        $canDelete = auth()->id() !== $user->id
-                                            && $user->role !== 'supervisor';
+                                        $canToggle = $user->id !== $currentUserId;
+                                        $canDelete = $user->id !== $currentUserId;
                                     @endphp
                                     <tr class="transition hover:bg-gray-50/80">
                                         <td>
                                             <div class="um-name">
                                                 <div class="font-medium text-gray-900">{{ $user->name }}</div>
-                                                @if ($user->id === auth()->id())
+                                                @if ($user->id === $currentUserId)
                                                     <div class="um-muted">Twoje konto</div>
                                                 @endif
                                             </div>
                                         </td>
+
                                         <td class="text-sm text-gray-700">{{ $user->email }}</td>
+
                                         <td>
-                                            <span class="um-badge {{ $user->role === 'admin' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700' }}">
+                                            <span class="um-badge {{ $user->role === 'admin' ? 'um-badge--active' : 'um-badge--muted' }}">
                                                 {{ $roleLabel }}
                                             </span>
                                         </td>
+
+                                        <td class="text-sm text-gray-700">
+                                            @php
+                                                $availableSupervisors = $supervisors->where('id', '!=', $user->id);
+                                            @endphp
+
+                                            <div class="um-supervisor-box">
+                                                <div class="um-name">
+                                                    <div class="font-medium text-gray-900">
+                                                        {{ $user->supervisor?->name ?? 'Brak przełożonego' }}
+                                                    </div>
+
+                                                    @if ($user->supervisor)
+                                                        <div class="um-muted">
+                                                            {{ $user->supervisor->is_active ? 'Aktywny' : 'Nieaktywny' }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                <form method="POST" action="{{ route('usermanagement.supervisor', $user) }}" class="um-supervisor-form">
+                                                    @csrf
+                                                    @method('PATCH')
+
+                                                    <select name="supervisor_id" class="um-supervisor-select">
+                                                        <option value="">Brak przełożonego</option>
+                                                        @foreach ($availableSupervisors as $supervisor)
+                                                            <option value="{{ $supervisor->id }}" @selected($user->supervisor_id == $supervisor->id)>
+                                                                {{ $supervisor->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <x-secondary-button type="submit" class="um-action-btn">
+                                                        Zapisz
+                                                    </x-secondary-button>
+                                                </form>
+
+                                                <div class="um-supervisor-note">
+                                                    Na liście są tylko aktywni przełożeni. Nie możesz wskazać tego samego konta.
+                                                </div>
+                                            </div>
+                                        </td>
+
                                         <td class="text-sm text-gray-700">
                                             {{ $user->first_login_at ? $user->first_login_at->timezone('Europe/Warsaw')->format('d.m.Y H:i') : '—' }}
                                         </td>
+
                                         <td class="text-sm text-gray-700">
                                             {{ $user->last_login_at ? $user->last_login_at->timezone('Europe/Warsaw')->format('d.m.Y H:i') : '—' }}
                                         </td>
+
                                         <td>
-                                            <span class="um-badge {{ $user->is_active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200' }}">
+                                            <span class="um-badge {{ $user->is_active ? 'um-badge--active' : 'um-badge--inactive' }}">
                                                 {{ $user->is_active ? 'Aktywne' : 'Nieaktywne' }}
                                             </span>
                                         </td>
+
                                         <td>
                                             <div class="um-actions">
                                                 @if ($canToggle)
@@ -307,10 +412,8 @@
                                                             Usuń
                                                         </x-danger-button>
                                                     </form>
-                                                @endif
-
-                                                @if (! $canToggle && ! $canDelete)
-                                                    <span class="text-sm text-gray-400">Brak akcji</span>
+                                                @else
+                                                    <div class="text-right text-sm text-gray-400">Brak akcji</div>
                                                 @endif
                                             </div>
                                         </td>

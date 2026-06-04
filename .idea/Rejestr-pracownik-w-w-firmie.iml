@@ -122,6 +122,8 @@
       <excludeFolder url="file://$MODULE_DIR$/Rejestr-pracownik-w-w-firmie/vendor/tijsverkoyen/css-to-inline-styles" />
       <excludeFolder url="file://$MODULE_DIR$/Rejestr-pracownik-w-w-firmie/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/Rejestr-pracownik-w-w-firmie/vendor/voku/portable-ascii" />
+      <excludeFolder url="file://$MODULE_DIR$/Rejestr-pracownik-w-w-firmie/storage/app" />
+      <excludeFolder url="file://$MODULE_DIR$/Rejestr-pracownik-w-w-firmie/storage/framework" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

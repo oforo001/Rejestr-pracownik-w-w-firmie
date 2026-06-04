@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         $route = match ($user?->role) {
-            'admin' => 'admin.dashboard',
+            'admin' => 'usermanagement',
             'supervisor' => 'supervisor.dashboard',
             default => 'employee.dashboard',
         };
